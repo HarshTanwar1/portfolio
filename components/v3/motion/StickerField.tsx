@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { dur } from "./motion";
+import { dur, isCoarsePointer } from "./motion";
 import { gsap, useGSAP } from "./gsap";
 
 export type StickerItem = {
@@ -74,7 +74,7 @@ export function StickerField({
         });
 
       // Mouse-follow — desktop (fine pointer) only.
-      if (window.matchMedia("(pointer: coarse)").matches) return;
+      if (isCoarsePointer()) return;
       const followers = gsap.utils
         .toArray<HTMLElement>(root.querySelectorAll("[data-sticker-follow]"))
         .map((el) => ({

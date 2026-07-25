@@ -18,7 +18,23 @@ export const SUNROOM = {
     contact: "#9CC96B",
   },
   ink: "#17421F",
-  accent: "#F2622E",
+  /**
+   * The ARTWORK color — sticker fills, OG-card art, the favicon dot, the
+   * ::selection tint. Deliberately NOT the functional text accent (see
+   * `accent` below): artwork is decorative, so it keeps the original bright
+   * coral that text can no longer use under WCAG AA.
+   */
+  coral: "#F2622E",
+  /**
+   * Functional accent (kickers, availability pill, vine labels, progress
+   * dots): brick — chosen from an AA-compliant candidate board. Passes WCAG
+   * AA (4.5:1) as TEXT on every field above; worst case is 4.52:1 on the
+   * leaf field, so there is almost NO headroom — do not lighten this value
+   * without re-running the contrast math. The original bright coral #F2622E
+   * lives on in the sticker artwork, which has its own fills and is purely
+   * decorative.
+   */
+  accent: "#951919",
   paper: "#FFFDF6",
   radius: "1.5rem",
 } as const;

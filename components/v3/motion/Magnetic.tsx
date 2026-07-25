@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { dur, EASE } from "./motion";
+import { dur, EASE, isCoarsePointer } from "./motion";
 import { gsap, useGSAP } from "./gsap";
-
-/** True when the primary pointer is coarse (touch) — magnetic/cursor no-op. */
-function isCoarsePointer(): boolean {
-  return window.matchMedia("(pointer: coarse)").matches;
-}
 
 /**
  * Shared listener fan-out for every mounted `<Magnetic>`. A page renders ~19 of

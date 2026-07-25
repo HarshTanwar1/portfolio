@@ -31,3 +31,11 @@ export const EASE = {
   inOut: "power2.inOut",
   pop: "back.out(1.7)",
 } as const;
+
+/**
+ * True when the primary pointer is coarse (touch) — pointer-driven flourishes
+ * (magnetic drift, cursor dot, sticker mouse-follow) no-op there.
+ */
+export function isCoarsePointer(): boolean {
+  return window.matchMedia("(pointer: coarse)").matches;
+}

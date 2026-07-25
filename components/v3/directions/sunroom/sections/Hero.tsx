@@ -80,7 +80,9 @@ export function Hero({ ready }: Readonly<{ ready: boolean }>) {
           className="relative z-10 flex flex-col items-center"
           style={{ color: SUNROOM.ink, fontFamily: "var(--font-body)" }}
         >
-          <p className="mb-3 text-base font-medium opacity-80">{heroKicker}</p>
+          {/* opacity-90, not 80: ink at 80% blends to 4.01:1 on the leaf
+              field (AA needs 4.5); 90% measures 4.91:1. */}
+          <p className="mb-3 text-base font-medium opacity-90">{heroKicker}</p>
           <p className="font-[family-name:var(--font-display)] text-[clamp(3.5rem,12vw,9rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.02em]">
             {site.shortName}
           </p>
@@ -122,7 +124,7 @@ export function Hero({ ready }: Readonly<{ ready: boolean }>) {
               as="p"
               mode="words"
               trigger="load"
-              className="mb-3 text-base font-medium opacity-80 sm:text-lg"
+              className="mb-3 text-base font-medium opacity-90 sm:text-lg"
               from={{ y: 20, rotate: 0 }}
             >
               {heroKicker}

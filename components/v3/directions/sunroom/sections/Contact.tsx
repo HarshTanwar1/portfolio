@@ -7,17 +7,11 @@ import { SplitReveal } from "@/components/v3/motion/SplitReveal";
 import { Choreo } from "@/components/v3/motion/SectionChoreo";
 import { Magnetic } from "@/components/v3/motion/Magnetic";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
+import { useCurrentYear } from "@/components/v3/motion/useCurrentYear";
 import { SUNROOM } from "../tokens";
 import { stickers } from "../stickers";
 
 const { contactKicker, contactTitle, contactLinks } = v3Copy.sunroom;
-
-/**
- * Module scope: identical on the server and hydrating client render — but for
- * a static export that means the BUILD year. The component corrects it after
- * hydration so the footer can't go stale across a New Year with no rebuild.
- */
-const BUILD_YEAR = new Date().getFullYear();
 
 /**
  * Flower + heart close the journey (binding composition) — flower up-left,
@@ -42,10 +36,7 @@ const pillCls =
  */
 export function Contact() {
   const [scale, setScale] = useState(1);
-  const [year, setYear] = useState(BUILD_YEAR);
-
-  // Post-hydration: swap the baked build year for the viewer's actual year.
-  useEffect(() => setYear(new Date().getFullYear()), []);
+  const year = useCurrentYear();
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
@@ -136,8 +127,10 @@ export function Contact() {
         </Choreo>
       </div>
 
-      {/* pb-20 on mobile keeps the last line clear of the fixed "↑ top" pill. */}
-      <footer className="relative z-10 mt-16 pb-20 text-center text-sm opacity-70 sm:pb-7">
+      {/* pb-20 on mobile keeps the last line clear of the fixed "↑ top" pill.
+          opacity-90, not 70: ink at 70% blends to 3.28:1 on the leaf field
+          (AA needs 4.5); 90% measures 4.91:1. */}
+      <footer className="relative z-10 mt-16 pb-20 text-center text-sm opacity-90 sm:pb-7">
         © {year} · {site.name}
       </footer>
     </div>

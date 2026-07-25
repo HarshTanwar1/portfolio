@@ -24,8 +24,8 @@ type SplitRevealProps = {
 const isWhitespace = (part: string) => /^\s+$/.test(part);
 
 /**
- * Accessible split-text reveal. The container carries `aria-label` with the
- * full string and every generated span is `aria-hidden`, so assistive tech
+ * Accessible split-text reveal. A visually-hidden span carries the full
+ * string and every generated span is `aria-hidden`, so assistive tech
  * reads the intact text while sighted users see the per-part animation.
  *
  * Under reduced motion (`dur() === 0`) the GSAP tween is skipped entirely and
@@ -73,7 +73,14 @@ export function SplitReveal({
   );
 
   return (
-    <Tag ref={containerRef} className={className} aria-label={text}>
+    <Tag ref={containerRef} className={className}>
+      {/* Accessible text as a visually-hidden span, NOT `aria-label`: the
+          label attribute is prohibited on generic containers (this component
+          renders as `p`/`span`/`div` in several places), which fails axe's
+          aria-prohibited-attr. The sr-only span reads as the intact string
+          while every animated part below stays aria-hidden. Absolutely
+          positioned and clipped — zero layout or paint impact. */}
+      <span className="sr-only">{text}</span>
       {parts.map((part, i) =>
         part === "" ? null : isWhitespace(part) ? (
           // Plain span: preserves the space, no transform so words can wrap.

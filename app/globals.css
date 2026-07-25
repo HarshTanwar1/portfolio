@@ -4,12 +4,15 @@
   /* Site-wide neutrals. These show only where a route doesn't paint its own
      field (e.g. the overscroll-bounce gutter behind every v3 route), so they
      are a warm, brand-neutral paper + ink rather than any one direction's
-     palette. Sunroom paper/ink family. */
+     palette. Sunroom paper/ink family. CSS can't import TS, so these mirror
+     sunroom/tokens.ts by hand: --color-canvas = SUNROOM.paper. */
   --color-canvas: #fffdf6;
   --color-fg: #232323;
   /* Brand accents powering the two chrome affordances below. `accent` is the
-     Sunroom coral (text-selection tint); `accent-2` is a near-black ink for the
-     focus ring, chosen to stay legible on every section field. */
+     Sunroom ARTWORK coral (= SUNROOM.coral in tokens.ts — the decorative
+     color, not the text accent), used as the text-selection tint; `accent-2`
+     is a near-black ink for the focus ring, chosen to stay
+     legible on every section field. */
   --color-accent: #f2622e;
   --color-accent-2: #232323;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

@@ -5,7 +5,7 @@ import { projects } from "@/content/projects";
 import { v3Copy } from "@/content/v3";
 import { SplitReveal } from "@/components/v3/motion/SplitReveal";
 import { usePinnedScrub } from "@/components/v3/motion/SectionChoreo";
-import { useScrollAnchor, useScrollTo } from "@/components/v3/motion/SmoothScroll";
+import { useDeckFocusSnap } from "@/components/v3/motion/useDeckFocusSnap";
 import { Magnetic } from "@/components/v3/motion/Magnetic";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
 import { gsap, ScrollTrigger, useGSAP } from "@/components/v3/motion/gsap";
@@ -143,75 +143,18 @@ export function Projects() {
     id: PIN_ID,
   });
 
-  // Nav/CTA jumps to #projects (deck mode only): land INSIDE the pin at the
-  // scroll position where the first card has just settled, not at the pin's
-  // empty start (progress 0, every card parked off-screen). Computed at click
-  // time from the live pin trigger so it survives ScrollTrigger refreshes and
-  // the pin-spacer geometry. `start`/`end` are the pin's document scroll range;
-  // scrub maps timeline progress linearly across it. Returns null (→ header
-  // fallback) until the trigger and its timeline exist. Not registered in flow
-  // mode — there the section header anchor is correct and cards show statically.
-  // A pending keyboard-focus snap (set below, consumed per resolve) retargets
-  // the same resolver at that card's settle point: card i tumbles over
-  // `[i, i+1]`, so it has landed at `i + FIRST_CARD_LANDED`.
-  const focusSnapCard = useRef<number | null>(null);
-  useScrollAnchor(
-    "#projects",
-    () => {
-      const st = ScrollTrigger.getById(PIN_ID);
-      const total = st?.animation?.duration() ?? 0;
-      if (!st || total <= 0) return null;
-      const card = focusSnapCard.current ?? 0;
-      focusSnapCard.current = null;
-      const progress = Math.min(1, (card + FIRST_CARD_LANDED) / total);
-      return st.start + progress * (st.end - st.start);
-    },
-    isDeck
-  );
-
-  // Keyboard focus inside the pinned deck: the browser's native
-  // scroll-into-view is computed from the focused link's pre-scrub rect and is
-  // blind to the pin (its scroll distance advances the timeline, not the
-  // page), so tabbing into the deck overshoots the entire pin — the deck lands
-  // fully dealt with the focused card buried and off-screen. Correct it the
-  // moment focus arrives: snap (immediate — same event turn, so the browser's
-  // wrong position never paints) to the offset where the focused card has just
-  // settled. Tab/Shift+Tab then step the deck through its dealt states in
-  // order. Keyboard-only via :focus-visible — mouse clicks on card links keep
-  // the scroll exactly where it is.
-  const scrollTo = useScrollTo();
-  const focusSnapActive = useRef(false);
-  useEffect(() => {
-    if (!isDeck) return;
-    const root = flowRef.current;
-    if (!root) return;
-    const onFocusIn = (e: FocusEvent) => {
-      if (focusSnapActive.current) return; // re-entry from our own refocus
-      const el = e.target as HTMLElement | null;
-      if (!el?.matches(":focus-visible")) return;
-      const card = el.closest("article");
-      const idx = cardRefs.current.findIndex((c) => c && c === card);
-      if (idx < 0) return;
-      focusSnapCard.current = idx;
-      scrollTo("#projects", { immediate: true });
-      // The instant multi-write scroll sequence (browser jump → snap, same
-      // event turn) leaves this pin's ScrollTrigger with a stale applied
-      // state — a subsequent real scroll does NOT recover it (verified), only
-      // a refresh does. Instance-scoped and synchronous so it lands before
-      // paint. The refresh juggles the pin-spacer DOM, which can BLUR the
-      // focused link — restore focus without letting the browser scroll again
-      // (`preventScroll`), guarded against re-entering this handler.
-      const st = ScrollTrigger.getById(PIN_ID);
-      if (st) {
-        focusSnapActive.current = true;
-        st.refresh();
-        if (document.activeElement !== el) el.focus({ preventScroll: true });
-        focusSnapActive.current = false;
-      }
-    };
-    root.addEventListener("focusin", onFocusIn);
-    return () => root.removeEventListener("focusin", onFocusIn);
-  }, [isDeck, scrollTo]);
+  // Nav jumps land at the first card's settle point; keyboard focus snaps the
+  // deck to the focused card's own (card i tumbles over `[i, i+1]`, so it has
+  // landed at `i + FIRST_CARD_LANDED`). Mechanism, gotchas, and rationale live
+  // in the shared hook.
+  useDeckFocusSnap({
+    hash: "#projects",
+    pinId: PIN_ID,
+    landedTime: (i) => i + FIRST_CARD_LANDED,
+    rootRef: flowRef,
+    cardRefs,
+    enabled: isDeck,
+  });
 
   // Flow-mode Choreo-style rise (mobile, motion on). Waits for `resolved`: the
   // tween applies `opacity: 0` immediately (immediateRender) and owns a
@@ -367,7 +310,9 @@ export function Projects() {
                   <span
                     aria-hidden
                     className="font-[family-name:var(--font-display)] text-xl font-bold sm:text-2xl"
-                    style={{ color: SUNROOM.accent }}
+                    // Ink, not accent: matches the card title beside it (user
+                    // call during the brick accent round).
+                    style={{ color: SUNROOM.ink }}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>

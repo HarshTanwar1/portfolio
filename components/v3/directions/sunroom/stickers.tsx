@@ -3,9 +3,12 @@
  * risk), in the style of the user-approved companion mockup. Each is a pure,
  * stateless component: decorative only, always `aria-hidden`, and sized via the
  * optional `size` prop (defaults to filling its container, which is how
- * `StickerField` drives them). Palette is hard-coded to the Sunroom tokens so a
- * sticker reads the same wherever it is dropped.
+ * `StickerField` drives them). Palette comes straight from the Sunroom tokens
+ * (single source of truth) so a sticker reads the same wherever it is dropped.
  */
+
+import { svgProps } from "@/components/v3/motion/svgProps";
+import { SUNROOM } from "./tokens";
 
 type StickerProps = Readonly<{
   /** Width in px; height follows the artwork's aspect ratio. Omit to fill. */
@@ -13,35 +16,32 @@ type StickerProps = Readonly<{
   className?: string;
 }>;
 
-const ORANGE = "#F2622E";
-const YELLOW = "#FFD23F";
-const GREEN = "#17421F";
-const LEAF = "#9CC96B";
-const PAPER = "#FFFDF6";
+// Local aliases for the artwork palette — values live in tokens.ts only.
+const ORANGE = SUNROOM.coral;
+// ⚠️ Deliberate coupling: the artwork gold IS the achievements field — the
+// site has ONE canonical gold. Retuning `fields.achievements` recolors the
+// sun disc and flower centers with it (correct brand behavior, but real: if
+// that ever becomes unwanted, split a dedicated artwork-gold token instead).
+const YELLOW = SUNROOM.fields.achievements;
+const GREEN = SUNROOM.ink;
+const LEAF = SUNROOM.fields.hero;
+const PAPER = SUNROOM.paper;
 
-/** Shared SVG wrapper: fills its container unless `size` is given. */
-function svgProps(size: number | undefined, viewBox: string) {
-  return {
-    viewBox,
-    width: size ?? "100%",
-    height: size ? undefined : "100%",
-    style: { display: "block", overflow: "visible" as const },
-    "aria-hidden": true,
-    focusable: false as const,
-  };
-}
-
-/** Flower — white core with four orange petals. */
+/** Flower — five coral petals around a butter center (shared with the OG card). */
 function Flower({ size, className }: StickerProps) {
+  // Five-petal daisy with a butter center — ported from the OG card's flower
+  // (user preferred it over the original four-petal/paper-center version),
+  // scaled so the artwork fills the 64-box like every other sticker.
   return (
     <svg {...svgProps(size, "0 0 64 64")} className={className}>
       <g fill={ORANGE}>
-        <circle cx="32" cy="11" r="11" />
-        <circle cx="32" cy="53" r="11" />
-        <circle cx="11" cy="32" r="11" />
-        <circle cx="53" cy="32" r="11" />
+        <circle cx="32" cy="12.8" r="12.8" />
+        <circle cx="50.24" cy="26.08" r="12.8" />
+        <circle cx="43.28" cy="47.52" r="12.8" />
+        <circle cx="20.72" cy="47.52" r="12.8" />
+        <circle cx="13.76" cy="26.08" r="12.8" />
       </g>
-      <circle cx="32" cy="32" r="13" fill={PAPER} />
+      <circle cx="32" cy="32" r="10.4" fill={YELLOW} />
     </svg>
   );
 }
