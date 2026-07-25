@@ -33,7 +33,12 @@ const NAV_CLEARANCE = 96;
  */
 type ScrollTargetResolver = () => number | null;
 
-type ScrollToFn = (hash: string) => void;
+/**
+ * `immediate` lands the jump in the same event turn with no glide — used by
+ * keyboard-focus corrections that must beat the next paint (e.g. the pinned
+ * decks snapping to the focused card's settle point).
+ */
+type ScrollToFn = (hash: string, opts?: { immediate?: boolean }) => void;
 
 type ScrollToApi = {
   scrollTo: ScrollToFn;
@@ -62,15 +67,15 @@ function headerTargetY(hash: string): number | null {
 }
 
 /** Native-scroll jump to an absolute Y (reduced motion / no Lenis). */
-function nativeScrollToY(y: number): void {
-  window.scrollTo({ top: y, behavior: dur() ? "smooth" : "auto" });
+function nativeScrollToY(y: number, immediate = false): void {
+  window.scrollTo({ top: y, behavior: immediate || !dur() ? "auto" : "smooth" });
 }
 
 /** Fallback API when no `<SmoothScroll>` is mounted: native header-anchored jumps. */
 const defaultApi: ScrollToApi = {
-  scrollTo: (hash) => {
+  scrollTo: (hash, opts) => {
     const y = headerTargetY(hash);
-    if (y != null) nativeScrollToY(y);
+    if (y != null) nativeScrollToY(y, opts?.immediate);
   },
   registerAnchor: () => () => {},
 };
@@ -153,7 +158,7 @@ export function SmoothScroll({
     []
   );
 
-  const scrollTo = useCallback<ScrollToFn>((hash) => {
+  const scrollTo = useCallback<ScrollToFn>((hash, opts) => {
     // A section-owned resolver wins (e.g. a pinned deck landing mid-pin);
     // otherwise land the section's header near the top.
     const resolver = anchorsRef.current.get(hash);
@@ -164,10 +169,10 @@ export function SmoothScroll({
 
     const lenis = lenisRef.current;
     if (lenis) {
-      lenis.scrollTo(y);
+      lenis.scrollTo(y, opts?.immediate ? { immediate: true } : undefined);
       return;
     }
-    nativeScrollToY(y);
+    nativeScrollToY(y, opts?.immediate);
   }, []);
 
   const api = useMemo<ScrollToApi>(
