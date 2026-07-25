@@ -9,7 +9,7 @@ import {
   useRef,
 } from "react";
 import Lenis from "lenis";
-import { dur } from "./motion";
+import { dur, isCoarsePointer } from "./motion";
 import { gsap, ScrollTrigger } from "./gsap";
 
 /**
@@ -86,7 +86,8 @@ const ScrollToContext = createContext<ScrollToApi>(defaultApi);
  * Mounts a single Lenis instance driving smooth `<html>` (window) scroll and
  * wires it into GSAP's ScrollTrigger. Lenis is intentionally NOT created under
  * reduced motion (`dur() === 0`) — the page falls back to native scrolling and
- * `useScrollTo` degrades to an instant native jump.
+ * `useScrollTo` degrades to an instant native jump — nor on touch-primary
+ * devices (see the coarse-pointer gate in the effect below).
  */
 export function SmoothScroll({
   children,
@@ -100,6 +101,15 @@ export function SmoothScroll({
   useEffect(() => {
     // Reduced motion: no Lenis at all, native scroll takes over.
     if (dur() === 0) return;
+
+    // Touch-primary devices: no Lenis either. Lenis only virtualizes WHEEL
+    // input — touch scrolling stays native under it — so on a phone/tablet it
+    // adds zero smoothing while still costing main-thread eval and a per-frame
+    // raf. Skipping it, `useScrollTo` falls back to native
+    // `behavior: "smooth"` jumps and ScrollTrigger listens to native scroll
+    // (both are the existing reduced-motion paths). Accepted edge: a tablet
+    // with an attached trackpad loses wheel smoothing.
+    if (isCoarsePointer()) return;
 
     const lenis = new Lenis({
       duration: 1.1,
