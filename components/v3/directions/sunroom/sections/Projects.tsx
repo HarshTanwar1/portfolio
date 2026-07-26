@@ -264,11 +264,16 @@ export function Projects() {
   // mirrors deck eligibility in pure CSS; `resolved` drops the hide the
   // moment the real mode is known (mobile flow stays visible throughout —
   // `md:` never matches there).
-  const deckCls = isDeck
-    ? "absolute inset-0 z-10"
-    : `relative z-10 mx-auto flex max-w-xl flex-col gap-8${
-        resolved ? "" : " motion-safe:md:invisible"
-      }`;
+  // Both variants are COMPLETE static strings on purpose: a utility glued to
+  // an interpolation (`gap-8${...}`) defeats Tailwind's static extraction —
+  // and the public export is the build where that bites, because the gallery
+  // files that happen to keep shared utilities alive here don't ship there
+  // (prod's mobile flow lost its card gaps exactly this way).
+  const flowBase = "relative z-10 mx-auto flex max-w-xl flex-col gap-8";
+  let deckCls: string;
+  if (isDeck) deckCls = "absolute inset-0 z-10";
+  else if (resolved) deckCls = flowBase;
+  else deckCls = `${flowBase} motion-safe:md:invisible`;
 
   // Both modes are flex columns so the paper panel (`grow` below) always
   // fills the article — required for the uniform min-height (the measurement
