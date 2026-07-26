@@ -35,7 +35,7 @@ export default function OgImage() {
           <stickers.sun size={220} />
         </div>
         <div style={{ position: "absolute", bottom: 70, right: 150, display: "flex" }}>
-          <stickers.flower size={150} />
+          <stickers.flower size={100} />
         </div>
 
         <div style={{ display: "flex", fontSize: 34, fontWeight: 700, opacity: 0.85 }}>

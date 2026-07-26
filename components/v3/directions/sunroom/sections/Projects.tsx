@@ -81,6 +81,8 @@ export function Projects() {
   const [active, setActive] = useState(0);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const activeRef = useRef(0);
+  // True for two frames after a keyboard focus — see the onUpdate guard.
+  const dotHoldRef = useRef(false);
   const flowRef = useRef<HTMLDivElement>(null);
   const dotsRef = useRef<HTMLOListElement>(null);
 
@@ -146,6 +148,15 @@ export function Projects() {
     // holds a moment before the pin releases. Total duration is `N + SETTLE`.
     tl.to({}, { duration: SETTLE }, N);
     tl.eventCallback("onUpdate", () => {
+      // Two windows where onUpdate must NOT drive the tracker (both measured
+      // stomping the keyboard path's write): (1) the focus snap's synchronous
+      // stale-state recovery — `st.refresh()` reverts this timeline to re-
+      // measure, firing onUpdate with a garbage playhead, batched into the
+      // same render; (2) the browser's native focus-jump scroll event, which
+      // dispatches AFTER the snap against post-refresh geometry that maps the
+      // parked scroll a hair past the settle boundary (reads as card i+1).
+      // `dotHoldRef` covers (2) for two frames after each keyboard focus.
+      if (snappingRef.current || dotHoldRef.current) return;
       const idx = Math.min(
         N - 1,
         Math.max(0, Math.floor(tl.progress() * tl.duration()))
@@ -167,13 +178,30 @@ export function Projects() {
   // deck to the focused card's own (card i tumbles over `[i, i+1]`, so it has
   // landed at `i + FIRST_CARD_LANDED`). Mechanism, gotchas, and rationale live
   // in the shared hook.
-  useDeckFocusSnap({
+  const snappingRef = useDeckFocusSnap({
     hash: "#projects",
     pinId: PIN_ID,
     landedTime: (i) => i + FIRST_CARD_LANDED,
     rootRef: flowRef,
     cardRefs,
     enabled: isDeck,
+    // A keyboard snap moves the deck without a real scroll, so the scrub's
+    // onUpdate (the dots' only other driver) never reports it — the tracker
+    // would lag until the next wheel input. Set it straight from the focused
+    // index; activeRef too, so onUpdate's change-detection agrees. The hold
+    // (released after two frames — past the late native-jump scroll event)
+    // keeps the snap dance's noisy recomputes from stomping this write; see
+    // the onUpdate guard.
+    onKeyboardFocus: (_card, i) => {
+      activeRef.current = i;
+      setActive(i);
+      dotHoldRef.current = true;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          dotHoldRef.current = false;
+        })
+      );
+    },
   });
 
   // Flow-mode Choreo-style rise (mobile, motion on). Waits for `resolved`: the
