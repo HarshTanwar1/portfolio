@@ -82,6 +82,83 @@ const defaultApi: ScrollToApi = {
 
 const ScrollToContext = createContext<ScrollToApi>(defaultApi);
 
+/** Session key holding this path's last scroll position (the glide target). */
+const scrollMemoryKey = () => `v3-scroll:${window.location.pathname}`;
+
+/*
+ * EARLY reload restore — module scope, so it runs at chunk evaluation, before
+ * hydration and before most of the browser's own (async, stale-sampled)
+ * restore attempts. The browser saves scrollY at the refresh instant, which
+ * is mid-glide whenever the visitor refreshes while Lenis is still easing —
+ * restoring it paints the WRONG section for the ~700ms until the settle
+ * re-assert (below) lands. Instead: take restoration over entirely
+ * (scrollRestoration = "manual") and write our saved glide-target now. The
+ * deck height reservation makes the server-rendered layout final, so the
+ * value is valid as soon as styles are in — the retry loop just waits out the
+ * pre-CSS frames. The landing manager's settle pass remains the final word.
+ */
+if (typeof window !== "undefined") {
+  let storageOk = false;
+  let saved = Number.NaN;
+  try {
+    saved = Number(sessionStorage.getItem(scrollMemoryKey()) ?? Number.NaN);
+    storageOk = true;
+  } catch {
+    // storage unavailable — leave the browser's restoration in charge.
+  }
+  if (storageOk) {
+    // Must be flagged during THIS page's life to govern the NEXT reload: the
+    // browser consults the history entry's flag at navigation commit, so
+    // setting "manual" only on arrival is too late to stop the stale restore
+    // already planned for the current load (measured: a browser restore
+    // landed 180ms AFTER our manual+write).
+    history.scrollRestoration = "manual";
+  }
+  const navType = (
+    performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined
+  )?.type;
+  if (
+    (navType === "reload" || navType === "back_forward") &&
+    Number.isFinite(saved)
+  ) {
+    const clampSaved = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      return Math.max(0, Math.min(saved, Math.max(0, max)));
+    };
+    const restore = (attempt: number) => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max >= saved || attempt >= 90) window.scrollTo(0, clampSaved());
+      else requestAnimationFrame(() => restore(attempt + 1));
+    };
+    restore(0);
+    // Keeper: Chromium re-applies its stale pre-reload offset ~200ms in even
+    // with restoration flagged manual on the entry (measured; spec says it
+    // shouldn't). Until the landing manager takes over, snap any scroll that
+    // is NOT real user input straight back to the saved target — whoever
+    // writes, we write back the same frame.
+    let userInput = false;
+    const onInput = () => {
+      userInput = true;
+    };
+    const inputs = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    for (const t of inputs) {
+      window.addEventListener(t, onInput, { passive: true, once: true });
+    }
+    const onScroll = () => {
+      if (userInput) return;
+      const y = clampSaved();
+      if (Math.abs(window.scrollY - y) > 4) window.scrollTo(0, y);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    setTimeout(() => {
+      window.removeEventListener("scroll", onScroll);
+      for (const t of inputs) window.removeEventListener(t, onInput);
+    }, 1600);
+  }
+}
+
 /**
  * Mounts a single Lenis instance driving smooth `<html>` (window) scroll and
  * wires it into GSAP's ScrollTrigger. Lenis is intentionally NOT created under
@@ -184,6 +261,143 @@ export function SmoothScroll({
     }
     nativeScrollToY(y, opts?.immediate);
   }, []);
+
+  // Landing manager: makes arrival scroll positions deterministic.
+  //
+  // Two arrival kinds need help, both because layout can move (or the
+  // browser's saved offset can be stale) around first paint:
+  // 1. FRESH NAVIGATION WITH A HASH — the browser's native fragment jump runs
+  //    against the server-rendered layout; once settled we re-land via the
+  //    SAME scrollTo the nav pills use (live geometry, deck mid-pin anchor
+  //    included). The deck height reservation makes this a near-no-op; it
+  //    remains the safety net for font-metric drift.
+  // 2. RELOAD / BACK-FORWARD — "put me back where I was". The browser
+  //    restores the scrollY it sampled at unload, which is STALE whenever the
+  //    visitor refreshed while a Lenis glide was still easing (the sampled
+  //    position is mid-glide, short of where they were headed — measured as
+  //    section-sized misses). We save the glide TARGET (where the scroll
+  //    would end) continuously, and re-assert it once layout settles. The
+  //    browser's own restore still runs first as the early visual
+  //    best-effort; ours is the authoritative final write.
+  // Every landing is skipped the moment the visitor provides real scroll
+  // input — a correction must never fight a human.
+  useEffect(() => {
+    // --- position memory (written on every navigation kind) ---
+    const KEY = scrollMemoryKey();
+    let saveRaf = 0;
+    const save = () => {
+      saveRaf = 0;
+      try {
+        sessionStorage.setItem(
+          KEY,
+          String(Math.round(lenisRef.current?.targetScroll ?? window.scrollY))
+        );
+      } catch {
+        // storage unavailable — reloads fall back to the browser's restore.
+      }
+    };
+    const onScroll = () => {
+      if (!saveRaf) saveRaf = requestAnimationFrame(save);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pagehide", save);
+    const stopSaving = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pagehide", save);
+      cancelAnimationFrame(saveRaf);
+    };
+
+    // --- pick the landing for THIS arrival ---
+    const navType = (
+      performance.getEntriesByType("navigation")[0] as
+        | PerformanceNavigationTiming
+        | undefined
+    )?.type;
+    const hash = window.location.hash;
+    let land: (() => void) | null = null;
+    if (navType === "reload" || navType === "back_forward") {
+      const raw = sessionStorage.getItem(KEY);
+      const savedY = raw === null ? Number.NaN : Number(raw);
+      if (Number.isFinite(savedY)) {
+        land = () => {
+          const max =
+            document.documentElement.scrollHeight - window.innerHeight;
+          const y = Math.max(0, Math.min(savedY, max));
+          const lenis = lenisRef.current;
+          if (lenis) lenis.scrollTo(y, { immediate: true });
+          else window.scrollTo({ top: y, behavior: "auto" });
+        };
+      }
+    } else if (hash) {
+      land = () => scrollTo(hash, { immediate: true });
+    }
+    if (!land) return stopSaving;
+    const doLand = land;
+
+    let cancelled = false;
+    let scrolled = false;
+    const markScrolled = () => {
+      scrolled = true;
+    };
+    const inputs = ["wheel", "touchstart", "keydown"] as const;
+    for (const t of inputs) {
+      window.addEventListener(t, markScrolled, { passive: true, once: true });
+    }
+
+    const loaded =
+      document.readyState === "complete"
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => {
+            window.addEventListener("load", () => resolve(), { once: true });
+          });
+    // The wrongness this corrects comes from LAYOUT MOVING AFTER SCROLL WAS
+    // SET: island hydration, the deck's pin-spacer (created a beat after its
+    // island mounts — "component live" is NOT "pin exists"), font swaps, and
+    // ScrollTrigger restoring pre-pin scroll from its cache. Proxies for
+    // those events proved unreliable, so measure the real thing instead:
+    // document height. Land once the height has held still for a few checks,
+    // and if it moves again inside the settle window, land again after it
+    // re-stabilizes. Every pass resolves the target fresh, so a repeat over
+    // settled layout is a same-position write — invisible.
+    const STABLE_CHECKS = 3; // consecutive equal heights ≈ 360ms of stillness
+    const CHECK_MS = 120;
+    const WINDOW_MS = 4000;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    Promise.all([loaded, document.fonts.ready]).then(() => {
+      if (cancelled) return;
+      const started = performance.now();
+      let lastH = -1;
+      let stableFor = 0;
+      let landedAtH = -1;
+      const tick = () => {
+        if (cancelled || scrolled) return;
+        const h = document.documentElement.scrollHeight;
+        stableFor = h === lastH ? stableFor + 1 : 0;
+        lastH = h;
+        const timedOut = performance.now() - started > WINDOW_MS;
+        if (timedOut) {
+          // Final word: a stale ScrollTrigger restore can land even at stable
+          // height. A same-position re-write is invisible; a drifted one is
+          // the rescue.
+          doLand();
+          return;
+        }
+        if (stableFor >= STABLE_CHECKS && h !== landedAtH) {
+          landedAtH = h;
+          doLand();
+        }
+        timer = setTimeout(tick, CHECK_MS);
+      };
+      tick();
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      stopSaving();
+      for (const t of inputs) window.removeEventListener(t, markScrolled);
+    };
+  }, [scrollTo]);
 
   const api = useMemo<ScrollToApi>(
     () => ({ scrollTo, registerAnchor }),

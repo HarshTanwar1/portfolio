@@ -56,7 +56,12 @@ export function Preloader({
     } catch {
       // sessionStorage unavailable (private mode) — treat as not-yet-played.
     }
-    if (dur() === 0 || done) {
+    // Deep-link arrivals skip the intro: a visitor following a section hash
+    // asked for that content, not the curtain (which would sandwich the
+    // already-visible section between two reveals). The session ticket is NOT
+    // stamped, so a later hash-less visit this session still gets the intro.
+    const hashArrival = window.location.hash !== "";
+    if (dur() === 0 || done || hashArrival) {
       if (!firedRef.current) {
         firedRef.current = true;
         onDone?.();

@@ -16,6 +16,24 @@ import { stickers } from "../stickers";
 
 const { projectsKicker, projectsTitle, projectLinks } = v3Copy.sunroom;
 const N = projects.length;
+/** Deck pin scroll distance in vh — the single source for the pinned
+ *  timeline's length AND the layout reservation below. */
+const DECK_LENGTH_VH = N * 40;
+/**
+ * Deck-mode layout reservation: the section's final deck height, occupied
+ * from the very first (server-rendered) paint. ScrollTrigger's pin-spacer is
+ * `pinned-element height + scroll distance` = 100vh (the wrapper's
+ * `h-screen`) + `DECK_LENGTH_VH` — but it only exists after hydration.
+ * Without this reservation the whole document grows by hundreds of px when
+ * the pin mounts, which strands the browser's native hash jump and its
+ * reload scroll restoration below-target (deep links landed a section short
+ * in prod). `dvh` tracks `window.innerHeight` — the unit ScrollTrigger
+ * measures the distance with. Applied via `motion-safe:md:` so it mirrors
+ * `isDeck` (wide + motion) before any JS runs; flow mode never reserves.
+ * INVARIANT: keep the `100 +` in sync with the pinned wrapper's `h-screen`
+ * and the distance term in sync with `usePinnedScrub`'s length argument.
+ */
+const DECK_RESERVE = `calc(${100 + DECK_LENGTH_VH} * 1dvh)`;
 /** Brief settled hold (timeline units) after the fifth card lands, so the
  *  tumble finishes a beat before the pin releases — reads as an intentional
  *  dock, not an abrupt cut. */
@@ -139,9 +157,11 @@ export function Projects() {
     });
   };
 
-  const pinRef = usePinnedScrub<HTMLDivElement>(build, isDeck ? N * 40 : 0, {
-    id: PIN_ID,
-  });
+  const pinRef = usePinnedScrub<HTMLDivElement>(
+    build,
+    isDeck ? DECK_LENGTH_VH : 0,
+    { id: PIN_ID }
+  );
 
   // Nav jumps land at the first card's settle point; keyboard focus snaps the
   // deck to the focused card's own (card i tumbles over `[i, i+1]`, so it has
@@ -237,9 +257,18 @@ export function Projects() {
     ? "absolute inset-x-0 top-[7vh] z-20 px-6 text-center"
     : "relative z-10 mx-auto mb-14 max-w-2xl text-center";
 
+  // Pre-resolve (SSR + the beat before hydration reads the media query), wide
+  // motion-capable viewports hide the flow-rendered cards: they are about to
+  // be replaced by the deck, and a blank beat of field inside the reserved
+  // box reads better than a flash of the mobile layout. `motion-safe:md:`
+  // mirrors deck eligibility in pure CSS; `resolved` drops the hide the
+  // moment the real mode is known (mobile flow stays visible throughout —
+  // `md:` never matches there).
   const deckCls = isDeck
     ? "absolute inset-0 z-10"
-    : "relative z-10 mx-auto flex max-w-xl flex-col gap-8";
+    : `relative z-10 mx-auto flex max-w-xl flex-col gap-8${
+        resolved ? "" : " motion-safe:md:invisible"
+      }`;
 
   // Both modes are flex columns so the paper panel (`grow` below) always
   // fills the article — required for the uniform min-height (the measurement
@@ -254,6 +283,14 @@ export function Projects() {
     : "relative flex w-full flex-col";
 
   return (
+    // Reservation wrapper — NOT the pinned element (a min-height on the
+    // pinned wrapper itself would inflate the pin-spacer). The spacer fills
+    // this box exactly once the deck engages; pre-hydration it holds the
+    // section's final size so nothing below ever shifts.
+    <div
+      className="motion-safe:md:min-h-[var(--deck-reserve)]"
+      style={{ "--deck-reserve": DECK_RESERVE } as React.CSSProperties}
+    >
     <div
       ref={isDeck ? pinRef : undefined}
       className={wrapperCls}
@@ -414,6 +451,7 @@ export function Projects() {
           ))}
         </ol>
       </div>
+    </div>
     </div>
   );
 }
