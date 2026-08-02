@@ -2,8 +2,8 @@ import type { Achievement } from "./types";
 
 export const achievements: Achievement[] = [
   {
-    title: "Dean's List Honors",
-    description: "Ranked 5th at graduation — JK Lakshmipat University",
+    title: "Dean's List, 7 of 8 Semesters",
+    description: "Graduated ranked 5th in the CSE batch — JK Lakshmipat University",
   },
   {
     title: "Cloud Application Developer Mastery Award",
@@ -11,7 +11,7 @@ export const achievements: Achievement[] = [
   },
   {
     title: "International Internship",
-    description: "The only student in my batch selected by Ignitus, Spain",
+    description: "The only student in the batch selected by Ignitus, Spain",
   },
   {
     title: "Two apps live in production",
