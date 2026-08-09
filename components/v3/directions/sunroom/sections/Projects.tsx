@@ -46,11 +46,14 @@ const PIN_ID = "sunroom-projects-pin";
  *  first repo card settled and centered instead of the empty pin-start. */
 const FIRST_CARD_LANDED = 1;
 
-const accentStickers: StickerItem[] = [
-  { node: <stickers.sun />, x: 8, y: 18, size: 66, drift: 0.5 },
-  { node: <stickers.sprig />, x: 93, y: 24, size: 60, drift: 0.7 },
-  { node: <stickers.grass />, x: 12, y: 82, size: 56, drift: 0.6 },
-];
+function accentStickers(scale: number): StickerItem[] {
+  const s = (n: number) => Math.round(n * scale);
+  return [
+    { node: <stickers.bolt />, x: 8, y: 18, size: s(74), drift: 0.5 },
+    { node: <stickers.tulip />, x: 93, y: 24, size: s(88), drift: 0.7 },
+    { node: <stickers.pottedPlant />, x: 12, y: 82, size: s(100), drift: 0.6 },
+  ];
+}
 
 /**
  * Projects — the showcase centerpiece. On desktop (≥768px, motion on) the section
@@ -78,6 +81,15 @@ export function Projects() {
   // from a genuine flow-mode `false`, so the flow-entrance tween below is never
   // created on the deck path — see its comment.
   const [resolved, setResolved] = useState(false);
+  const [stickerScale, setStickerScale] = useState(1);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const apply = () => setStickerScale(mq.matches ? 0.62 : 1);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
   const [active, setActive] = useState(0);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const activeRef = useRef(0);
@@ -329,7 +341,7 @@ export function Projects() {
       className={wrapperCls}
       style={{ fontFamily: "var(--font-body)" }}
     >
-      <StickerField items={accentStickers} />
+      <StickerField items={accentStickers(stickerScale)} />
 
       <div className={headerCls} data-scroll-anchor>
         <p

@@ -14,14 +14,14 @@ import { stickers } from "../stickers";
 const { contactKicker, contactTitle, contactLinks } = v3Copy.sunroom;
 
 /**
- * Flower + heart close the journey (binding composition) — flower up-left,
- * heart down-right, clear of the centered type column.
+ * Flower + swallow close the journey — flower up-left, swallow down-right,
+ * clear of the centered type column.
  */
 function contactStickers(scale: number): StickerItem[] {
   const s = (n: number) => Math.round(n * scale);
   return [
     { node: <stickers.flower />, x: 12, y: 20, size: s(88), drift: 0.5 },
-    { node: <stickers.sun />, x: 87, y: 72, size: s(122), drift: 0.6 },
+    { node: <stickers.swallow />, x: 87, y: 72, size: s(112), drift: 0.6 },
   ];
 }
 

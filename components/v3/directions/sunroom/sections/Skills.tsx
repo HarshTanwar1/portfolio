@@ -11,21 +11,17 @@ import { PaddyBeds } from "../paddy/PaddyBeds";
 const { skillsKicker, skillsTitle } = v3Copy.sunroom;
 
 /**
- * Stickers avoid the vertical middle band, which the paddy beds own. On
- * mobile the headline and the beds span the full width, so the set shrinks
- * and tucks into the top/bottom padding strips instead.
+ * Stickers avoid the vertical middle band, which the paddy beds own — the
+ * paddy's own flora: a toadstool by the headline, a lucky clover at the
+ * field's foot. Both are gated off small screens (per-device call); the
+ * paddy beds carry mobile on their own.
  */
 function skillStickers(mobile: boolean): StickerItem[] {
-  return mobile
-    ? [
-        { node: <stickers.flower />, x: 89, y: 2.6, size: 44, drift: 0.5 },
-        { node: <stickers.sparkle />, x: 90, y: 97, size: 20, drift: 0.5 },
-      ]
-    : [
-        { node: <stickers.flower />, x: 92, y: 14, size: 64, drift: 0.5 },
-        { node: <stickers.sprig />, x: 5, y: 86, size: 54, drift: 0.7 },
-        { node: <stickers.sparkle />, x: 93, y: 90, size: 28, drift: 0.5 },
-      ];
+  if (mobile) return [];
+  return [
+    { node: <stickers.mushroom />, x: 92, y: 14, size: 88, drift: 0.5 },
+    { node: <stickers.clover />, x: 5, y: 86, size: 76, drift: 0.7 },
+  ];
 }
 
 /**
@@ -34,11 +30,11 @@ function skillStickers(mobile: boolean): StickerItem[] {
  * section on the gold field just below.
  */
 export function Skills() {
-  const [mobile, setMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
-    const apply = () => setMobile(mq.matches);
+    const apply = () => setIsMobile(mq.matches);
     apply();
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
@@ -49,7 +45,7 @@ export function Skills() {
       className="relative min-h-screen overflow-hidden py-24 sm:py-32"
       style={{ fontFamily: "var(--font-body)" }}
     >
-      <StickerField items={skillStickers(mobile)} />
+      <StickerField items={skillStickers(isMobile)} />
 
       <div className="relative z-10">
         <div className="mx-auto w-full max-w-5xl px-6" data-scroll-anchor>

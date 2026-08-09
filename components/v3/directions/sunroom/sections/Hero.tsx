@@ -13,17 +13,18 @@ import { stickers } from "../stickers";
 const { heroKicker, heroCtas } = v3Copy.sunroom;
 
 /**
- * Sticker placements (binding composition): sun top-right, flower left of the
- * name, leaf bottom-right, sparkle by the CTAs. `scale` shrinks the whole set
- * on small screens so the folk art frames — never crowds — the centered type.
+ * Sticker placements (binding composition): sun top-right, butterfly left of
+ * the name, ladybug bottom-right, sparkle by the CTAs. `scale` shrinks the
+ * whole set on small screens so the folk art frames — never crowds — the
+ * centered type. Once-only rule: each sticker has exactly one home site-wide.
  */
 function heroStickers(scale: number): StickerItem[] {
   const s = (n: number) => Math.round(n * scale);
   return [
     { node: <stickers.sun />, x: 87, y: 15, size: s(122), drift: 0.6 },
-    { node: <stickers.flower />, x: 11, y: 40, size: s(96), drift: 0.4 },
-    { node: <stickers.sprig />, x: 86, y: 79, size: s(78), drift: 0.8 },
-    { node: <stickers.sparkle />, x: 33, y: 73, size: s(38), drift: 0.5 },
+    { node: <stickers.butterfly />, x: 11, y: 40, size: s(104), drift: 0.4 },
+    { node: <stickers.ladybug />, x: 86, y: 79, size: s(70), drift: 0.8 },
+    { node: <stickers.sparkle />, x: 33, y: 73, size: s(44), drift: 0.5 },
   ];
 }
 

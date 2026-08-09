@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { achievements } from "@/content/achievements";
 import { v3Copy } from "@/content/v3";
 import { SplitReveal } from "@/components/v3/motion/SplitReveal";
@@ -19,11 +19,15 @@ const GRAIN_EDGE = "rgba(23,66,31,0.55)";
 const BADGE_GOLD = "#F2A21C";
 const GRAIN_COUNT = 26;
 
-/** Corner set: coral heart lower-left, large grass tuft lower-right. */
-const cornerStickers: StickerItem[] = [
-  { node: <stickers.heart />, x: 8, y: 78, size: 60, drift: 0.5 },
-  { node: <stickers.grass />, x: 91, y: 86, size: 60, drift: 0.6 },
-];
+/** Corner set: the harvest's fruit — strawberry lower-left, cherry sprig
+ *  lower-right. Red on the gold field, per the ripening story. */
+function cornerStickers(scale: number): StickerItem[] {
+  const s = (n: number) => Math.round(n * scale);
+  return [
+    { node: <stickers.strawberry />, x: 8, y: 78, size: s(92), drift: 0.5 },
+    { node: <stickers.berrySprig />, x: 91, y: 86, size: s(84), drift: 0.6 },
+  ];
+}
 
 /**
  * Achievements — the harvest. The skills paddy's produce, on the gold the
@@ -36,6 +40,15 @@ const cornerStickers: StickerItem[] = [
  */
 export function Achievements() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [stickerScale, setStickerScale] = useState(1);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const apply = () => setStickerScale(mq.matches ? 0.62 : 1);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   useGSAP(
     () => {
@@ -116,7 +129,7 @@ export function Achievements() {
         ))}
       </div>
 
-      <StickerField items={cornerStickers} />
+      <StickerField items={cornerStickers(stickerScale)} />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl">
         <p

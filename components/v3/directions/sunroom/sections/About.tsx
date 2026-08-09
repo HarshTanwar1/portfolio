@@ -11,25 +11,16 @@ import { stickers } from "../stickers";
 
 const { aboutTitle, aboutKicker } = v3Copy.sunroom;
 
-function aboutStickers(scale: number): StickerItem[] {
-  const s = (n: number) => Math.round(n * scale);
+// Heart is gated off small screens (per-device call); bee + snail carry
+// mobile at the shrunk scale.
+function aboutStickers(mobile: boolean): StickerItem[] {
+  const s = (n: number) => Math.round(n * (mobile ? 0.62 : 1));
   return [
-    { node: <stickers.sparkle />, x: 90, y: 16, size: s(32), drift: 0.7 },
-    // Hidden below sm (wrapper span — the sticker svg's inline display:block
-    // defeats a class on the svg itself): collides with the availability
-    // pill area on narrow screens.
-    {
-      node: (
-        <span className="hidden sm:block">
-          <stickers.heart />
-        </span>
-      ),
-      x: 9,
-      y: 82,
-      size: s(56),
-      drift: 0.5,
-    },
-    { node: <stickers.grass />, x: 89, y: 84, size: s(58), drift: 0.6 },
+    { node: <stickers.bee />, x: 90, y: 16, size: s(80), drift: 0.7 },
+    ...(mobile
+      ? []
+      : [{ node: <stickers.heart />, x: 9, y: 82, size: s(68), drift: 0.5 }]),
+    { node: <stickers.snail />, x: 89, y: 84, size: s(92), drift: 0.6 },
   ];
 }
 
@@ -40,11 +31,11 @@ function aboutStickers(scale: number): StickerItem[] {
  * pill-badge. Under reduced motion every reveal lands instantly.
  */
 export function About() {
-  const [scale, setScale] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
-    const apply = () => setScale(mq.matches ? 0.62 : 1);
+    const apply = () => setIsMobile(mq.matches);
     apply();
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
@@ -55,7 +46,7 @@ export function About() {
       className="relative flex min-h-screen items-center overflow-hidden px-6 py-24 sm:py-32"
       style={{ fontFamily: "var(--font-body)" }}
     >
-      <StickerField items={aboutStickers(scale)} />
+      <StickerField items={aboutStickers(isMobile)} />
 
       <div className="relative z-10 mx-auto w-full max-w-4xl" data-scroll-anchor>
         <p
