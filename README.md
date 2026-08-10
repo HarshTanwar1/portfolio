@@ -31,8 +31,8 @@ Bold type, hand-drawn stickers, and a GSAP-driven motion system carry the whole 
 
 - ♿ **Motion with a conscience** — full `prefers-reduced-motion` support; every animation has a static or simplified path, and content is never gated behind motion.
 - ⌨️ **Keyboard-first details** — focus-visible styling everywhere, keyboard focus lifts project cards above the deck, and Home/End keys glide through the smooth-scroll engine instead of fighting it.
-- 📱 **Fully responsive** — pinned showcases become vertical flows on touch, stickers re-layout per breakpoint, and backgrounds stay painted through mobile browser-chrome collapse.
-- ⚡ **Fast where it counts** — statically exported, Lighthouse scores in the high 90s, server-rendered headline for SEO.
+- 📱 **Fully responsive** — pinned showcases become vertical flows on touch, every sticker scales and gates off its own breakpoint, and backgrounds stay painted through mobile browser-chrome collapse.
+- ⚡ **Fast where it counts** — statically exported and edge-served; Lighthouse holds 100s for accessibility, best practices, and SEO, with performance 99–100 on desktop and 90+ on mobile.
 - 🗂️ **Content as data** — sections render entirely from typed modules under `content/`; updating the portfolio is a data edit, not a component edit.
 
 <br>
@@ -52,12 +52,12 @@ Bold type, hand-drawn stickers, and a GSAP-driven motion system carry the whole 
 
 ## 🚀 Features & Functionality
 
-- 🎨 **Field sweeps** — the page background is one continuous canvas that re-tints as you scroll between sections, ending on a golden "harvest" field.
+- 🎨 **Field sweeps** — the page background is one continuous canvas that re-tints as you scroll between sections, ending on a honey "harvest" field.
 - 🃏 **Projects deck** — a pinned, scrub-driven card deck with docking indicators; cards deal out as you scroll and rewind on the way back.
 - 🌿 **Journey vines** — experience and education timelines traced by SVG vines generated from the measured positions of their leaf nodes, drawn in by scroll.
 - 🌾 **Rice-paddy skills** — a watering can slides in, tilts, and pours a parabolic shower into the first bed; terraced beds flood one another through spillways while skill chips sprout with the rising water. Hovering any chip pools ripple rings around it.
 - 🌧️ **Grain downpour** — the achievements section opens with a once-per-visit rain of grain that the award plaques pop up through, badges pulsing as they land.
-- ✂️ **Sticker field** — a paper-cutout sticker system (suns, sprigs, grass, hearts, flowers, sparkles) dresses every section's corners, tuned per breakpoint.
+- ✂️ **Sticker field** — 22 hand-drawn SVG stickers (suns, sunflowers, bees, butterflies, snails, mushrooms, swallows…) dress every section's corners — each placed exactly once site-wide, each gated by its own responsive breakpoint.
 - 🧲 **Micro-interactions** — magnetic pills that drift toward the cursor, a trailing cursor ring, split-text reveals, and a counting preloader curtain.
 
 <br>
@@ -96,6 +96,7 @@ Then open **http://localhost:3000/** in your browser and scroll away! 🎉
 - 📐 **Transform-immune measurement** — generating SVG vine paths from `offsetTop` chains so entrance animations can't poison the geometry.
 - 🎨 **Paint-order pitfalls** — CSS canvas background propagation, negative z-index layers, and why background fixes must be verified in pixels, not computed styles.
 - ♿ **Reduced-motion parity** — designing every animation with an equivalent static state instead of bolting accessibility on afterwards.
+- 🏝️ **Deferred hydration on a static page** — code-splitting the below-fold sections and delaying their hydration until approach or idle, while preserving the server-rendered HTML byte-for-byte through React 19's stricter hydration rules.
 
 <br>
 
