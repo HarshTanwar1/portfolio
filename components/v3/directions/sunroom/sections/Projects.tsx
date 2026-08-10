@@ -12,7 +12,7 @@ import { gsap, ScrollTrigger, useGSAP } from "@/components/v3/motion/gsap";
 import { dur, EASE } from "@/components/v3/motion/motion";
 import { useUniformCardHeights } from "@/components/v3/motion/useUniformCardHeights";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 
 const { projectsKicker, projectsTitle, projectLinks } = v3Copy.sunroom;
 const N = projects.length;
@@ -49,9 +49,9 @@ const FIRST_CARD_LANDED = 1;
 function accentStickers(scale: number): StickerItem[] {
   const s = (n: number) => Math.round(n * scale);
   return [
-    { node: <stickers.bolt />, x: 8, y: 18, size: s(74), drift: 0.5 },
-    { node: <stickers.tulip />, x: 93, y: 24, size: s(88), drift: 0.7 },
-    { node: <stickers.pottedPlant />, x: 12, y: 82, size: s(100), drift: 0.6 },
+    { node: <Stickers.Bolt />, x: 8, y: 18, size: s(74), drift: 0.5 },
+    { node: <Stickers.Tulip />, x: 93, y: 24, size: s(88), drift: 0.7 },
+    { node: <Stickers.PottedPlant />, x: 12, y: 82, size: s(100), drift: 0.6 },
   ];
 }
 

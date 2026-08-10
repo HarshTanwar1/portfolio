@@ -8,7 +8,7 @@ import { StickerField, type StickerItem } from "@/components/v3/motion/StickerFi
 import { gsap, useGSAP } from "@/components/v3/motion/gsap";
 import { dur, EASE } from "@/components/v3/motion/motion";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 
 const { achievementsKicker, achievementsTitle } = v3Copy.sunroom;
 
@@ -24,8 +24,8 @@ const GRAIN_COUNT = 26;
 function cornerStickers(scale: number): StickerItem[] {
   const s = (n: number) => Math.round(n * scale);
   return [
-    { node: <stickers.strawberry />, x: 8, y: 78, size: s(92), drift: 0.5 },
-    { node: <stickers.berrySprig />, x: 91, y: 86, size: s(84), drift: 0.6 },
+    { node: <Stickers.Strawberry />, x: 8, y: 78, size: s(92), drift: 0.5 },
+    { node: <Stickers.BerrySprig />, x: 91, y: 86, size: s(84), drift: 0.6 },
   ];
 }
 
@@ -162,7 +162,7 @@ export function Achievements() {
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
                 style={{ background: BADGE_GOLD }}
               >
-                <stickers.sheaf size={26} />
+                <Stickers.Sheaf size={26} />
               </span>
               <div>
                 <h3 className="font-[family-name:var(--font-display)] text-lg font-extrabold leading-snug sm:text-xl">

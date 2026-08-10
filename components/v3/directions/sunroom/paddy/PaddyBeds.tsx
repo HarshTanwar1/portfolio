@@ -6,7 +6,7 @@ import { SUNROOM } from "../tokens";
 import { WATER_FILL, WATER_SURFACE, SPRAY_FILL, RIPPLE_STROKE } from "./constants";
 import { dur, EASE } from "@/components/v3/motion/motion";
 import { gsap, useGSAP } from "@/components/v3/motion/gsap";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 import { usePaddyInteractions } from "./interactions";
 
 /** One shower stream: a fromTo pair (horizontal throw + gravity fall) landing
@@ -177,7 +177,7 @@ export function PaddyBeds() {
         aria-hidden
         className="pointer-events-none absolute -top-14 right-8 z-20 opacity-0 sm:right-14"
       >
-        <stickers.wateringCan size={72} />
+        <Stickers.WateringCan size={72} />
         {/* ⚠️ STANDING CAVEAT: this marker sits at the sprinkler FACE of the
             WateringCan SVG (face center 6.8/58 ≈ 11.7% x, 13.7/42 ≈ 32.6% y of
             its viewBox) and the shower's throw distances were tuned so streams

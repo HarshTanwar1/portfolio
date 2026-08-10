@@ -5,7 +5,7 @@ import { v3Copy } from "@/content/v3";
 import { SplitReveal } from "@/components/v3/motion/SplitReveal";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 import { PaddyBeds } from "../paddy/PaddyBeds";
 
 const { skillsKicker, skillsTitle } = v3Copy.sunroom;
@@ -19,8 +19,8 @@ const { skillsKicker, skillsTitle } = v3Copy.sunroom;
 function skillStickers(mobile: boolean): StickerItem[] {
   if (mobile) return [];
   return [
-    { node: <stickers.mushroom />, x: 92, y: 14, size: 88, drift: 0.5 },
-    { node: <stickers.clover />, x: 5, y: 86, size: 76, drift: 0.7 },
+    { node: <Stickers.Mushroom />, x: 92, y: 14, size: 88, drift: 0.5 },
+    { node: <Stickers.Clover />, x: 5, y: 86, size: 76, drift: 0.7 },
   ];
 }
 

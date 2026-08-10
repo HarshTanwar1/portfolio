@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/content/site";
-import { stickers } from "@/components/v3/directions/sunroom/stickers";
+import { Stickers } from "@/components/v3/directions/sunroom/stickers";
 import { SUNROOM } from "@/components/v3/directions/sunroom/tokens";
 
 export const size = { width: 1200, height: 630 };
@@ -32,10 +32,10 @@ export default function OgImage() {
       >
         {/* Corner stickers frame the type without crowding it. */}
         <div style={{ position: "absolute", top: 70, right: 90, display: "flex" }}>
-          <stickers.sun size={220} />
+          <Stickers.Sun size={220} />
         </div>
         <div style={{ position: "absolute", bottom: 70, right: 150, display: "flex" }}>
-          <stickers.flower size={100} />
+          <Stickers.Flower size={100} />
         </div>
 
         <div style={{ display: "flex", fontSize: 34, fontWeight: 700, opacity: 0.85 }}>

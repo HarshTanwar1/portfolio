@@ -9,7 +9,7 @@ import { Magnetic } from "@/components/v3/motion/Magnetic";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
 import { useCurrentYear } from "@/components/v3/motion/useCurrentYear";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 
 const { contactKicker, contactTitle, contactLinks } = v3Copy.sunroom;
 
@@ -20,8 +20,8 @@ const { contactKicker, contactTitle, contactLinks } = v3Copy.sunroom;
 function contactStickers(scale: number): StickerItem[] {
   const s = (n: number) => Math.round(n * scale);
   return [
-    { node: <stickers.flower />, x: 12, y: 20, size: s(88), drift: 0.5 },
-    { node: <stickers.swallow />, x: 87, y: 72, size: s(112), drift: 0.6 },
+    { node: <Stickers.Flower />, x: 12, y: 20, size: s(88), drift: 0.5 },
+    { node: <Stickers.Swallow />, x: 87, y: 72, size: s(112), drift: 0.6 },
   ];
 }
 

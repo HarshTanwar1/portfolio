@@ -10,7 +10,7 @@ import { StickerField, type StickerItem } from "@/components/v3/motion/StickerFi
 import { gsap, useGSAP } from "@/components/v3/motion/gsap";
 import { dur } from "@/components/v3/motion/motion";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 
 const { journeyKicker, journeyTitle, journeyColumns } = v3Copy.sunroom;
 
@@ -20,9 +20,9 @@ const { journeyKicker, journeyTitle, journeyColumns } = v3Copy.sunroom;
 function accentStickers(mobile: boolean): StickerItem[] {
   if (mobile) return [];
   return [
-    { node: <stickers.sunflower />, x: 94, y: 24, size: 95, drift: 0.5 },
-    { node: <stickers.acorn />, x: 90, y: 62, size: 75, drift: 0.7 },
-    { node: <stickers.sprout />, x: 7, y: 86, size: 88, drift: 0.6 },
+    { node: <Stickers.Sunflower />, x: 94, y: 24, size: 95, drift: 0.5 },
+    { node: <Stickers.Acorn />, x: 90, y: 62, size: 75, drift: 0.7 },
+    { node: <Stickers.Sprout />, x: 7, y: 86, size: 88, drift: 0.6 },
   ];
 }
 
@@ -69,7 +69,7 @@ function LeafNode() {
         className="flex items-center justify-center rounded-full p-1.5"
         style={{ background: SUNROOM.fields.experience }}
       >
-        <stickers.leaf size={22} />
+        <Stickers.Leaf size={22} />
       </span>
     </span>
   );

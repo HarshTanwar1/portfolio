@@ -477,4 +477,4 @@ function Swallow({ size, className }: StickerProps) {
   );
 }
 
-export const stickers = { flower: Flower, sun: Sun, leaf: Leaf, sparkle: Sparkle, heart: Heart, wateringCan: WateringCan, sheaf: Sheaf, clover: Clover, mushroom: Mushroom, ladybug: Ladybug, bee: Bee, sunflower: Sunflower, strawberry: Strawberry, tulip: Tulip, pottedPlant: PottedPlant, snail: Snail, bolt: Bolt, acorn: Acorn, butterfly: Butterfly, sprout: Sprout, berrySprig: BerrySprig, swallow: Swallow };
+export const Stickers = { Flower, Sun, Leaf, Sparkle, Heart, WateringCan, Sheaf, Clover, Mushroom, Ladybug, Bee, Sunflower, Strawberry, Tulip, PottedPlant, Snail, Bolt, Acorn, Butterfly, Sprout, BerrySprig, Swallow };

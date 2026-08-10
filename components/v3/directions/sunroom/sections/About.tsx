@@ -7,7 +7,7 @@ import { SplitReveal } from "@/components/v3/motion/SplitReveal";
 import { Choreo } from "@/components/v3/motion/SectionChoreo";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 
 const { aboutTitle, aboutKicker } = v3Copy.sunroom;
 
@@ -16,11 +16,11 @@ const { aboutTitle, aboutKicker } = v3Copy.sunroom;
 function aboutStickers(mobile: boolean): StickerItem[] {
   const s = (n: number) => Math.round(n * (mobile ? 0.62 : 1));
   return [
-    { node: <stickers.bee />, x: 90, y: 16, size: s(80), drift: 0.7 },
+    { node: <Stickers.Bee />, x: 90, y: 16, size: s(80), drift: 0.7 },
     ...(mobile
       ? []
-      : [{ node: <stickers.heart />, x: 9, y: 82, size: s(68), drift: 0.5 }]),
-    { node: <stickers.snail />, x: 89, y: 84, size: s(92), drift: 0.6 },
+      : [{ node: <Stickers.Heart />, x: 9, y: 82, size: s(68), drift: 0.5 }]),
+    { node: <Stickers.Snail />, x: 89, y: 84, size: s(92), drift: 0.6 },
   ];
 }
 

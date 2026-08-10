@@ -8,7 +8,7 @@ import { Magnetic } from "@/components/v3/motion/Magnetic";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
 import { useScrollTo } from "@/components/v3/motion/SmoothScroll";
 import { SUNROOM } from "../tokens";
-import { stickers } from "../stickers";
+import { Stickers } from "../stickers";
 
 const { heroKicker, heroCtas } = v3Copy.sunroom;
 
@@ -21,10 +21,10 @@ const { heroKicker, heroCtas } = v3Copy.sunroom;
 function heroStickers(scale: number): StickerItem[] {
   const s = (n: number) => Math.round(n * scale);
   return [
-    { node: <stickers.sun />, x: 87, y: 15, size: s(122), drift: 0.6 },
-    { node: <stickers.butterfly />, x: 11, y: 40, size: s(104), drift: 0.4 },
-    { node: <stickers.ladybug />, x: 86, y: 79, size: s(70), drift: 0.8 },
-    { node: <stickers.sparkle />, x: 33, y: 73, size: s(44), drift: 0.5 },
+    { node: <Stickers.Sun />, x: 87, y: 15, size: s(122), drift: 0.6 },
+    { node: <Stickers.Butterfly />, x: 11, y: 40, size: s(104), drift: 0.4 },
+    { node: <Stickers.Ladybug />, x: 86, y: 79, size: s(70), drift: 0.8 },
+    { node: <Stickers.Sparkle />, x: 33, y: 73, size: s(44), drift: 0.5 },
   ];
 }
 
