@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { experience, education } from "@/content/experience";
 import type { ExperienceEntry, EducationEntry } from "@/content/types";
 import { v3Copy } from "@/content/v3";
@@ -9,20 +9,27 @@ import { Choreo } from "@/components/v3/motion/SectionChoreo";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
 import { gsap, useGSAP } from "@/components/v3/motion/gsap";
 import { dur } from "@/components/v3/motion/motion";
+import { useBelow } from "@/components/v3/motion/useBelow";
 import { SUNROOM } from "../tokens";
 import { Stickers } from "../stickers";
 
 const { journeyKicker, journeyTitle, journeyColumns } = v3Copy.sunroom;
 
 // The growth arc, read bottom-up along the timeline: sprout at the start,
-// acorn mid-way, full sunflower bloom at the top. The whole arc is gated off
-// small screens (per-device call); the vine + leaf nodes carry mobile.
-function accentStickers(mobile: boolean): StickerItem[] {
-  if (mobile) return [];
+// acorn mid-way, full sunflower bloom at the top. Each sticker gates off
+// where it starts colliding with the timeline columns (user-tuned):
+// sprout at ≤1225px, sunflower + acorn at ≤1025px.
+function accentStickers(hideSprout: boolean, hideBloom: boolean): StickerItem[] {
   return [
-    { node: <Stickers.Sunflower />, x: 94, y: 24, size: 95, drift: 0.5 },
-    { node: <Stickers.Acorn />, x: 90, y: 62, size: 75, drift: 0.7 },
-    { node: <Stickers.Sprout />, x: 7, y: 86, size: 88, drift: 0.6 },
+    ...(hideBloom
+      ? []
+      : [
+          { node: <Stickers.Sunflower />, x: 94, y: 24, size: 95, drift: 0.5 },
+          { node: <Stickers.Acorn />, x: 90, y: 62, size: 75, drift: 0.7 },
+        ]),
+    ...(hideSprout
+      ? []
+      : [{ node: <Stickers.Sprout />, x: 7, y: 86, size: 88, drift: 0.6 }]),
   ];
 }
 
@@ -155,15 +162,8 @@ function ColumnHeader({ label }: Readonly<{ label: string }>) {
  */
 export function Journey() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    const apply = () => setIsMobile(mq.matches);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
+  const hideSprout = useBelow(1225);
+  const hideBloom = useBelow(1025);
 
   // Build each column's vine path from measured leaf positions, then draw it
   // on scroll (motion only). Reduced motion still builds the path (so leaves
@@ -293,7 +293,7 @@ export function Journey() {
       className="relative min-h-screen overflow-hidden px-6 py-24 sm:py-32"
       style={{ fontFamily: "var(--font-body)" }}
     >
-      <StickerField items={accentStickers(isMobile)} />
+      <StickerField items={accentStickers(hideSprout, hideBloom)} />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl" data-scroll-anchor>
         <p

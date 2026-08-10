@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { about } from "@/content/about";
 import { v3Copy } from "@/content/v3";
 import { SplitReveal } from "@/components/v3/motion/SplitReveal";
 import { Choreo } from "@/components/v3/motion/SectionChoreo";
 import { StickerField, type StickerItem } from "@/components/v3/motion/StickerField";
+import { useBelow } from "@/components/v3/motion/useBelow";
 import { SUNROOM } from "../tokens";
 import { Stickers } from "../stickers";
 
@@ -31,15 +31,7 @@ function aboutStickers(mobile: boolean): StickerItem[] {
  * pill-badge. Under reduced motion every reveal lands instantly.
  */
 export function About() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    const apply = () => setIsMobile(mq.matches);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
+  const isMobile = useBelow(640);
 
   return (
     <div
