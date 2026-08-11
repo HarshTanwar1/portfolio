@@ -3,6 +3,9 @@ import { site } from "@/content/site";
 import { Stickers } from "@/components/v3/directions/sunroom/stickers";
 import { SUNROOM } from "@/components/v3/directions/sunroom/tokens";
 
+// Required marker for `output: "export"` builds (the public repo).
+export const dynamic = "force-static";
+
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = `${site.shortName} — ${site.role}`;
