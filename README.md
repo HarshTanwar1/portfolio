@@ -6,7 +6,7 @@ A sunny, scroll-choreographed one-page portfolio
 
 Bold type, hand-drawn stickers, and a GSAP-driven motion system carry the whole story on a single page — from a preloader curtain and split-text hero reveal, through a pinned project deck, to a rice-paddy skills field that gets watered chip by chip
 
-🌐 **Live at [harshtanwar1.vercel.app](https://harshtanwar1.vercel.app)**
+🌐 **Live at [harshtanwar1.pages.dev](https://harshtanwar1.pages.dev)**
 
 <br>
 
@@ -15,7 +15,7 @@ Bold type, hand-drawn stickers, and a GSAP-driven motion system carry the whole 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![GSAP](https://img.shields.io/badge/GSAP-3.15-88CE02?style=for-the-badge&logo=greensock&logoColor=black)
-![Vercel](https://img.shields.io/badge/Vercel-hosting-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-hosting-F38020?style=for-the-badge&logo=cloudflarepages&logoColor=white)
 
 </div>
 
@@ -46,7 +46,7 @@ Bold type, hand-drawn stickers, and a GSAP-driven motion system carry the whole 
 | **Styling**       | Tailwind CSS 4                                                     |
 | **Animation**     | GSAP 3 + ScrollTrigger via `@gsap/react`                          |
 | **Smooth scroll** | Lenis                                                              |
-| **Hosting**       | Vercel (+ Analytics)                                               |
+| **Hosting**       | Cloudflare Pages (dual-stack IPv4 + IPv6, HTTP/3)                  |
 
 <br>
 
