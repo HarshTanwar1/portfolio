@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: `${site.shortName} — ${site.role}`,
   description: site.description,
+  // Author metadata — read by link-preview inspectors (e.g. LinkedIn's).
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
   openGraph: {
     title: `${site.shortName} — ${site.role}`,
     description: site.description,
