@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   // Author metadata — read by link-preview inspectors (e.g. LinkedIn's).
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
+  // Google Search Console ownership proof (URL-prefix property; the pages.dev
+  // DNS zone is Cloudflare's, so DNS verification is unavailable). Must stay —
+  // Google re-checks it periodically and unverifies the property if it drops.
+  verification: {
+    google: "nO9Bgs1uUnTKiUe95hcwrqqCv-vxCD5FbsiYal-KHNA",
+  },
   openGraph: {
     title: `${site.shortName} — ${site.role}`,
     description: site.description,
