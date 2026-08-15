@@ -99,7 +99,13 @@ export function Projects() {
   const dotsRef = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
+    // The pinned deck needs desktop width AND real vertical room: a landscape
+    // phone passes 768px wide with only ~400px of height, colliding the
+    // pinned composition with the section header. 575px clears every phone's
+    // landscape height (~475 max with collapsed chrome) while staying under
+    // the shortest common laptop viewport (~630 on 1366×768 screens);
+    // tablets/iPads (≥744 landscape) keep the deck.
+    const mq = window.matchMedia("(min-width: 768px) and (min-height: 575px)");
     const apply = () => setIsDeck(mq.matches && dur() !== 0);
     apply();
     setResolved(true);
