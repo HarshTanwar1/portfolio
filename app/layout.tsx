@@ -32,6 +32,19 @@ export const metadata: Metadata = {
   },
 };
 
+// Person structured data (JSON-LD) — inert to browsers (never executed),
+// read by search engines to bind the site, the name, and the public profiles
+// into one entity for name searches.
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  alternateName: site.shortName,
+  jobTitle: site.role,
+  url: site.url,
+  sameAs: [site.github, site.linkedin, site.leetcode, site.hackerrank],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -43,6 +56,11 @@ export default function RootLayout({
         className={`${inter.variable} bg-canvas font-sans text-fg antialiased`}
       >
         {children}
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
       </body>
     </html>
   );

@@ -7,6 +7,9 @@ export interface SiteMeta {
   email: string;
   github: string;
   linkedin: string;
+  /** Additional public profiles — feed the Person schema's `sameAs` links. */
+  leetcode: string;
+  hackerrank: string;
   resumePath: string | null;
 }
 
