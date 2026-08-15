@@ -42,7 +42,7 @@ export const skills: SkillGroup[] = [
       "UiPath Studio",
       "Web scraping",
       "Linux",
-      "Vercel",
+      "Cloudflare Pages",
     ],
   },
 ];
