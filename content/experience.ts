@@ -18,7 +18,7 @@ export const experience: ExperienceEntry[] = [
     company: "CDAC",
     role: "Frontend Web Developer",
     start: "Apr 2024",
-    end: "Apr 2025",
+    end: "Mar 2025",
     location: "India",
     bullets: [
       "Designed Figma wireframes defining UI structure, workflows, and layouts.",

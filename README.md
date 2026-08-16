@@ -31,7 +31,7 @@ Bold type, hand-drawn stickers, and a GSAP-driven motion system carry the whole 
 
 - ♿ **Motion with a conscience** — full `prefers-reduced-motion` support; every animation has a static or simplified path, and content is never gated behind motion.
 - ⌨️ **Keyboard-first details** — focus-visible styling everywhere, keyboard focus lifts project cards above the deck, and Home/End keys glide through the smooth-scroll engine instead of fighting it.
-- 📱 **Fully responsive** — pinned showcases become vertical flows on touch, every sticker scales and gates off its own breakpoint, and backgrounds stay painted through mobile browser-chrome collapse.
+- 📱 **Fully responsive** — pinned showcases become vertical flows on compact viewports, every sticker scales and gates off its own breakpoint, and backgrounds stay painted through mobile browser-chrome collapse.
 - ⚡ **Fast where it counts** — statically exported and edge-served; Lighthouse holds 100s for accessibility, best practices, and SEO, with performance 99–100 on desktop and 90+ on mobile.
 - 🗂️ **Content as data** — sections render entirely from typed modules under `content/`; updating the portfolio is a data edit, not a component edit.
 
