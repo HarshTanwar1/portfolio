@@ -8,6 +8,10 @@ import { Preloader } from "@/components/v3/motion/Preloader";
 import { CursorDot } from "@/components/v3/motion/Magnetic";
 import { DeferredSection } from "@/components/v3/motion/DeferredSection";
 import { v3Copy } from "@/content/v3";
+import {
+  PRELOADER_VEIL_ID,
+  veilSkipScript,
+} from "@/components/v3/motion/preloaderSkip";
 import { SUNROOM } from "./tokens";
 import { Nav } from "./sections/Nav";
 import { Hero } from "./sections/Hero";
@@ -72,6 +76,41 @@ export function SunroomPage() {
             fontFamily: "var(--font-display)",
           }}
         >
+          {/*
+            First-paint veil: the curtain's opening frame, shipped in the
+            server HTML so on a first visit the loader — never page content —
+            is the first thing painted (pre-hydration, Google text-fragment
+            arrivals used to flash mid-page content before the curtain could
+            mount). The inline <script> right after it re-runs the Preloader's
+            exact skip rules DURING PARSE (one shared function serialized in —
+            see preloaderSkip.ts) and removes the veil pre-paint for repeat /
+            #hash / reduced-motion visitors, whose first paint stays content,
+            exactly as before. The 4s animation is JS-failure insurance: if
+            hydration never arrives, the veil fades out and the static page
+            shows (a healthy slow load beats the timer — local throttled
+            hydration lands well inside it). <noscript> hides the veil when
+            scripting is off entirely. The dangerouslySetInnerHTML wrapper
+            keeps hydration from diffing a node the parse-time script may
+            already have removed. z-50 = the curtain's own layer (covers the
+            z-40 nav); the curtain mounts later in the DOM so it paints above,
+            and Preloader removes the veil the moment it takes over.
+          */}
+          <div
+            dangerouslySetInnerHTML={{
+              __html:
+                `<style>@keyframes v3VeilOut{to{opacity:0;visibility:hidden}}` +
+                `#${PRELOADER_VEIL_ID}{position:fixed;inset:0;z-index:50;` +
+                `background:${SUNROOM.fields.hero};` +
+                `animation:v3VeilOut .3s ease 4s forwards}</style>` +
+                `<div id="${PRELOADER_VEIL_ID}"></div>` +
+                `<noscript><style>#${PRELOADER_VEIL_ID}{display:none}</style></noscript>`,
+            }}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: veilSkipScript(SUNROOM_PRELOADER_KEY),
+            }}
+          />
           <Preloader
             word={v3Copy.sunroom.preloaderWord}
             onDone={onDone}

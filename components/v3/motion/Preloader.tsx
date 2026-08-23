@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { dur, EASE } from "./motion";
 import { gsap, useGSAP } from "./gsap";
+import { PRELOADER_VEIL_ID, preloaderSkip } from "./preloaderSkip";
 
 /** Default session key marking the preloader as already played this session. */
 const DEFAULT_DONE_KEY = "v3-preloader-done";
@@ -34,8 +35,11 @@ type PreloaderProps = {
  * later mount, and renders nothing at all under reduced motion — in both skip
  * cases `onDone` still fires so the hero can start on its own.
  *
- * The show/skip decision runs in a layout effect (before paint) so no hero
- * content flashes underneath before the curtain covers it.
+ * The show/skip decision runs in a layout effect (before paint) via the shared
+ * `preloaderSkip` predicate. That covers every paint AFTER hydration; the
+ * pre-hydration window is covered by the sunroom first-paint veil (see the
+ * veil block in `SunroomPage` + `preloaderSkip.ts`), which this component
+ * removes as soon as it takes over — curtain mounting or skip, either way.
  */
 export function Preloader({
   word,
@@ -48,20 +52,15 @@ export function Preloader({
   const counterRef = useRef<HTMLSpanElement>(null);
   const firedRef = useRef(false);
 
-  // Decide before paint whether the curtain plays at all.
+  // Decide before paint whether the curtain plays at all. The rules (played
+  // this session / #hash deep link / reduced motion) live in `preloaderSkip`,
+  // the SAME function the sunroom veil's parse-time script embeds — see
+  // preloaderSkip.ts for why the two can't drift.
   useIsoLayoutEffect(() => {
-    let done = false;
-    try {
-      done = sessionStorage.getItem(storageKey) === "1";
-    } catch {
-      // sessionStorage unavailable (private mode) — treat as not-yet-played.
-    }
-    // Deep-link arrivals skip the intro: a visitor following a section hash
-    // asked for that content, not the curtain (which would sandwich the
-    // already-visible section between two reveals). The session ticket is NOT
-    // stamped, so a later hash-less visit this session still gets the intro.
-    const hashArrival = window.location.hash !== "";
-    if (dur() === 0 || done || hashArrival) {
+    if (preloaderSkip(storageKey)) {
+      // Belt: on skip paths the parse-time script already removed the veil;
+      // repeat here so the two deciders can never leave it stranded.
+      document.getElementById(PRELOADER_VEIL_ID)?.remove();
       if (!firedRef.current) {
         firedRef.current = true;
         onDone?.();
@@ -69,7 +68,7 @@ export function Preloader({
       return;
     }
     setShow(true);
-    // onDone / dur are stable enough for a play-once decision; run once.
+    // onDone / storageKey are stable enough for a play-once decision; run once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -81,6 +80,10 @@ export function Preloader({
       const overlay = overlayRef.current;
       const counter = counterRef.current;
       if (!overlay || !counter) return;
+
+      // The curtain (same field color) is in the DOM above the veil in this
+      // same pre-paint frame — drop the veil so exactly one cover exists.
+      document.getElementById(PRELOADER_VEIL_ID)?.remove();
 
       const finish = () => {
         try {
