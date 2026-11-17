@@ -58,7 +58,7 @@ function pulseSplash(splash: HTMLElement, fx: number, landY: number, i: number) 
 }
 
 /**
- * The rice-paddy skills beds (spec §§1-3). Four connected terraces, one per
+ * The rice-paddy skills beds (spec §§1-3). Connected terraces, one per
  * skill group: coral tag column + wrapping ink pills over a (for now dormant)
  * water layer. Spillways sit between beds, alternating right/left/right so the
  * Task-2 cascade can snake down the terraces. Beds are real lists for AT; every

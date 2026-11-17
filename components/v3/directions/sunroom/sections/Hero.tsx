@@ -87,7 +87,7 @@ export function Hero({ ready }: Readonly<{ ready: boolean }>) {
           <p className="font-[family-name:var(--font-display)] text-[clamp(3.5rem,12vw,9rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.02em]">
             {site.shortName}
           </p>
-          <p className="mt-5 max-w-[34ch] text-lg font-medium">
+          <p className="mt-5 max-w-[48ch] text-balance text-lg font-medium">
             {site.role.toLowerCase()}
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
@@ -160,7 +160,7 @@ export function Hero({ ready }: Readonly<{ ready: boolean }>) {
               trigger="load"
               stagger={0.05}
               from={{ y: 24, rotate: 0, delay: 0.5 }}
-              className="mt-5 max-w-[34ch] text-lg font-medium sm:text-xl"
+              className="mt-5 max-w-[48ch] text-balance text-lg font-medium sm:text-xl"
             >
               {site.role.toLowerCase()}
             </SplitReveal>

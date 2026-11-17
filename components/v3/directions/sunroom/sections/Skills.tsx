@@ -28,8 +28,8 @@ function skillStickers(hideMushroom: boolean, hideClover: boolean): StickerItem[
 }
 
 /**
- * Skills — the young-rice field. Below the headline, the paddy: four
- * garden-bed terraces (see paddy/PaddyBeds). Achievements moved to their own
+ * Skills — the young-rice field. Below the headline, the paddy: one
+ * garden-bed terrace per skill group (see paddy/PaddyBeds). Achievements moved to their own
  * section on the gold field just below.
  */
 export function Skills() {

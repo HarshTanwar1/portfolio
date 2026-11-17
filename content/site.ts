@@ -3,9 +3,9 @@ import type { SiteMeta } from "./types";
 export const site: SiteMeta = {
   name: "Harshverrdhon Singh Tanwar",
   shortName: "Harsh Tanwar",
-  role: "Full-Stack Developer · Django & React",
+  role: "Full-Stack Developer · React, Spring Boot & Django",
   description:
-    "Full-stack developer building end-to-end web applications with Django, React and Next.js — with a side of machine learning and automation.",
+    "Full-stack developer building web applications with React, Next.js, Spring Boot and Django — with a side of generative AI, machine learning and automation.",
   url: "https://harshtanwar1.pages.dev",
   email: "harshverrdhon@gmail.com",
   github: "https://github.com/HarshTanwar1",
