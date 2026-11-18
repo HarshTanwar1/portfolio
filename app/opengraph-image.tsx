@@ -17,6 +17,21 @@ const LEAF = SUNROOM.fields.hero; // field
 const INK = SUNROOM.ink; // name + role
 const BRICK = SUNROOM.accent; // url line — the functional text accent
 
+// Type sizes, top to bottom. The role line is sized so that it ends left of
+// the sticker column (the sun and flower occupy roughly x ≥ 896 of the 1200px
+// card): a longer role needs a smaller size — re-measure the generated PNG if
+// `site.role` changes.
+const KICKER_SIZE = 30;
+const NAME_SIZE = 100;
+const ROLE_SIZE = 33;
+const URL_SIZE = 28;
+
+// Optical alignment: at display size the name's first letter carries more
+// built-in left spacing than the smaller lines, so its ink would start a few
+// pixels to their right. The nudge pulls it back onto the same left edge —
+// re-measure it in the generated PNG if NAME_SIZE or the name ever changes.
+const NAME_NUDGE = -6;
+
 export default function OgImage() {
   return new ImageResponse(
     (
@@ -41,16 +56,25 @@ export default function OgImage() {
           <Stickers.Flower size={100} />
         </div>
 
-        <div style={{ display: "flex", fontSize: 34, fontWeight: 700, opacity: 0.85 }}>
+        <div style={{ display: "flex", fontSize: KICKER_SIZE, fontWeight: 700, opacity: 0.85 }}>
           hi, i&apos;m
         </div>
-        <div style={{ display: "flex", fontSize: 104, fontWeight: 800, lineHeight: 1, marginTop: 8 }}>
+        <div
+          style={{
+            display: "flex",
+            fontSize: NAME_SIZE,
+            fontWeight: 800,
+            lineHeight: 1,
+            marginTop: 8,
+            marginLeft: NAME_NUDGE,
+          }}
+        >
           {site.shortName}
         </div>
-        <div style={{ display: "flex", fontSize: 40, fontWeight: 700, marginTop: 24 }}>
+        <div style={{ display: "flex", fontSize: ROLE_SIZE, fontWeight: 700, marginTop: 24 }}>
           {site.role}
         </div>
-        <div style={{ display: "flex", fontSize: 26, fontWeight: 700, marginTop: 40, color: BRICK }}>
+        <div style={{ display: "flex", fontSize: URL_SIZE, fontWeight: 700, marginTop: 40, color: BRICK }}>
           {site.url.replace("https://", "")}
         </div>
       </div>
